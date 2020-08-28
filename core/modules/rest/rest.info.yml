@@ -3,11 +3,10 @@ type: module
 description: 'Exposes entities and other resources as RESTful web API'
 package: Web services
 # version: VERSION
-core: 8.x
 dependencies:
   - drupal:serialization
 
 # Information added by Drupal.org packaging script on 2020-08-05
-version: '8.9.3'
+version: '9.0.3'
 project: 'drupal'
-datestamp: 1596665109
+datestamp: 1596664630

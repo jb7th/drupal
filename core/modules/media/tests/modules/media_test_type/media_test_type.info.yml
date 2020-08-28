@@ -1,7 +1,6 @@
 name: 'Media test type'
 type: module
 description: 'Provides test type for a media item.'
-core: 8.x
 package: Testing
 # version: VERSION
 dependencies:
@@ -9,6 +8,6 @@ dependencies:
   - drupal:media_test_source
 
 # Information added by Drupal.org packaging script on 2020-08-05
-version: '8.9.3'
+version: '9.0.3'
 project: 'drupal'
-datestamp: 1596665109
+datestamp: 1596664630

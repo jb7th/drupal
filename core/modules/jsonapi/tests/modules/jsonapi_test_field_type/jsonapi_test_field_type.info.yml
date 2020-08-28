@@ -1,9 +1,8 @@
 name: 'JSON API test format-agnostic @FieldType normalizers'
 type: module
 package: Testing
-core: 8.x
 
 # Information added by Drupal.org packaging script on 2020-08-05
-version: '8.9.3'
+version: '9.0.3'
 project: 'drupal'
-datestamp: 1596665109
+datestamp: 1596664630

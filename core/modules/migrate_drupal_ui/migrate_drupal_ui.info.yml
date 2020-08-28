@@ -3,7 +3,6 @@ type: module
 description: 'Provides a user interface for migrating from older Drupal versions.'
 package: Migration
 # version: VERSION
-core: 8.x
 configure: migrate_drupal_ui.upgrade
 dependencies:
   - drupal:migrate
@@ -11,6 +10,6 @@ dependencies:
   - drupal:dblog
 
 # Information added by Drupal.org packaging script on 2020-08-05
-version: '8.9.3'
+version: '9.0.3'
 project: 'drupal'
-datestamp: 1596665109
+datestamp: 1596664630

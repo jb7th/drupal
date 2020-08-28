@@ -3,7 +3,6 @@ type: module
 description: 'Allows the creation of custom blocks and block types.'
 package: Core
 # version: VERSION
-core: 8.x
 dependencies:
   - drupal:block
   - drupal:text
@@ -11,6 +10,6 @@ dependencies:
 configure: entity.block_content.collection
 
 # Information added by Drupal.org packaging script on 2020-08-05
-version: '8.9.3'
+version: '9.0.3'
 project: 'drupal'
-datestamp: 1596665109
+datestamp: 1596664630

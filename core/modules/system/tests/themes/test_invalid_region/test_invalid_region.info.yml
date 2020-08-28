@@ -3,12 +3,10 @@ type: theme
 base theme: stable
 description: 'Test theme which has a non-existent content region.'
 # version: VERSION
-core: 8.x
-
 regions:
   - foo: Foo
 
 # Information added by Drupal.org packaging script on 2020-08-05
-version: '8.9.3'
+version: '9.0.3'
 project: 'drupal'
-datestamp: 1596665109
+datestamp: 1596664630

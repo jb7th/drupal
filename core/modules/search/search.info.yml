@@ -3,10 +3,9 @@ type: module
 description: 'Allows users to create search pages based on plugins provided by other modules.'
 package: Core
 # version: VERSION
-core: 8.x
 configure: entity.search_page.collection
 
 # Information added by Drupal.org packaging script on 2020-08-05
-version: '8.9.3'
+version: '9.0.3'
 project: 'drupal'
-datestamp: 1596665109
+datestamp: 1596664630

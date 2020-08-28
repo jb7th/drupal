@@ -3,7 +3,6 @@ type: theme
 base theme: stable
 description: 'Theme for testing the block system'
 # version: VERSION
-core: 8.x
 regions:
   sidebar_first: 'Left sidebar'
   sidebar_second: 'Right sidebar'
@@ -17,6 +16,6 @@ regions_hidden:
   - sidebar_second
 
 # Information added by Drupal.org packaging script on 2020-08-05
-version: '8.9.3'
+version: '9.0.3'
 project: 'drupal'
-datestamp: 1596665109
+datestamp: 1596664630
