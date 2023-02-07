@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 /**
  * Defines a base unit test for testing existence of local tasks.
  *
- * @todo Add tests for access checking and url building,
+ * @todo Add tests for access checking and URL building,
  *   https://www.drupal.org/node/2112245.
  */
 abstract class LocalTaskIntegrationTestBase extends UnitTestCase {
@@ -40,7 +40,7 @@ abstract class LocalTaskIntegrationTestBase extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp(): void {
+  protected function setUp() {
     parent::setUp();
 
     $container = new ContainerBuilder();

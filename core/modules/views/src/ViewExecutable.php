@@ -74,16 +74,6 @@ class ViewExecutable {
   protected $ajaxEnabled = FALSE;
 
   /**
-   * The plugin name.
-   */
-  public ?string $plugin_name;
-
-  /**
-   * The build execution time.
-   */
-  public string|float $build_time;
-
-  /**
    * Where the results of a query will go.
    *
    * The array must use a numeric index starting at 0.
@@ -247,7 +237,7 @@ class ViewExecutable {
   public $row_index;
 
   /**
-   * Allow to override the url of the current view.
+   * Allow to override the \Drupal\Core\Url of the current view.
    *
    * @var \Drupal\Core\Url
    */

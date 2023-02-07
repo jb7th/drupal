@@ -43,6 +43,7 @@ class RouterTest extends BrowserTestBase {
     $session = $this->getSession();
 
     // Check expected headers from FinishResponseSubscriber.
+    $this->assertSession()->responseHeaderEquals('X-UA-Compatible', 'IE=edge');
     $this->assertSession()->responseHeaderEquals('Content-language', 'en');
     $this->assertSession()->responseHeaderEquals('X-Content-Type-Options', 'nosniff');
     $this->assertSession()->responseHeaderEquals('X-Frame-Options', 'SAMEORIGIN');
@@ -229,7 +230,7 @@ class RouterTest extends BrowserTestBase {
   }
 
   /**
-   * Checks the generate method on the url generator using the front router.
+   * Checks the generate method on the URL generator using the front router.
    */
   public function testUrlGeneratorFront() {
     $front_url = Url::fromRoute('<front>', [], ['absolute' => TRUE]);
