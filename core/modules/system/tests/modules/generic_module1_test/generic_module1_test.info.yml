@@ -4,6 +4,6 @@ description: 'A testing module with no special functionality. It just exists. Ca
 package: Testing
 
 # Information added by Drupal.org packaging script on 2023-03-01
-version: '9.5.4'
+version: '10.0.4'
 project: 'drupal'
-datestamp: 1677680891
+datestamp: 1677681567
