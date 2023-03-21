@@ -90,10 +90,6 @@ class LanguageNegotiationContentEntity extends LanguageNegotiationMethodBase imp
    * {@inheritdoc}
    */
   public function getLangcode(Request $request = NULL) {
-    if ($request === NULL || $this->languageManager === NULL) {
-      return NULL;
-    }
-
     $langcode = $request->query->get(static::QUERY_PARAMETER);
 
     $language_enabled = array_key_exists($langcode, $this->languageManager->getLanguages());
@@ -143,7 +139,7 @@ class LanguageNegotiationContentEntity extends LanguageNegotiationMethodBase imp
   public function getLanguageSwitchLinks(Request $request, $type, Url $url) {
     $links = [];
     $query = [];
-    parse_str($request->getQueryString(), $query);
+    parse_str($request->getQueryString() ?? '', $query);
 
     foreach ($this->languageManager->getNativeLanguages() as $language) {
       $langcode = $language->getId();
