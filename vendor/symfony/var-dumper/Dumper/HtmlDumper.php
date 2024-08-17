@@ -163,9 +163,7 @@ class HtmlDumper extends CliDumper
 <script>
 Sfdump = window.Sfdump || (function (doc) {
 
-if (doc.body instanceof HTMLElement) {
-    doc.body.classList.add('sf-js-enabled');
-}
+doc.documentElement.classList.add('sf-js-enabled');
 
 var rxEsc = /([.*+?^${}()|\[\]\/\\])/g,
     idRx = /\bsf-dump-\d+-ref[012]\w+\b/,
@@ -665,7 +663,7 @@ pre.sf-dump:after {
    clear: both;
 }
 pre.sf-dump span {
-    display: inline;
+    display: inline-flex;
 }
 pre.sf-dump a {
     text-decoration: none;
