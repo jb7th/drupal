@@ -6,7 +6,7 @@ dependencies:
   - drupal:user
   - drupal:node
 
-# Information added by Drupal.org packaging script on 2024-08-08
-version: '10.3.2'
+# Information added by Drupal.org packaging script on 2024-11-20
+version: '10.3.9'
 project: 'drupal'
-datestamp: 1723109893
+datestamp: 1732132846
