@@ -6,7 +6,7 @@ package: Testing
 dependencies:
   - drupal:editor
 
-# Information added by Drupal.org packaging script on 2024-11-20
-version: '10.3.9'
+# Information added by Drupal.org packaging script on 2025-02-19
+version: '10.3.13'
 project: 'drupal'
-datestamp: 1732132846
+datestamp: 1739986955
