@@ -7,7 +7,7 @@ lifecycle: deprecated
 lifecycle_link: https://www.drupal.org/node/3223395#s-action
 configure: entity.action.collection
 
-# Information added by Drupal.org packaging script on 2025-02-19
-version: '10.3.13'
+# Information added by Drupal.org packaging script on 2025-03-19
+version: '10.3.14'
 project: 'drupal'
-datestamp: 1739986955
+datestamp: 1742410144
