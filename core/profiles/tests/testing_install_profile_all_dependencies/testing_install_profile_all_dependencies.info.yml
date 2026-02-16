@@ -4,13 +4,13 @@ description: 'Profile for testing that install profiles can require a module.'
 # version: VERSION
 hidden: true
 dependencies:
-  - drupal:ban
+  - drupal:dependency_foo_test
   - drupal:dblog
 install: []
 themes:
   - starterkit_theme
 
-# Information added by Drupal.org packaging script on 2025-11-13
-version: '11.1.9'
+# Information added by Drupal.org packaging script on 2025-12-10
+version: '11.2.10'
 project: 'drupal'
-datestamp: 1762992166
+datestamp: 1765361967

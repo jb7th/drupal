@@ -799,7 +799,7 @@ EOF;
 
         if (\is_array($callable)) {
             if ($callable[0] instanceof Reference
-                || ($callable[0] instanceof Definition && $this->definitionVariables->contains($callable[0]))
+                || ($callable[0] instanceof Definition && $this->definitionVariables->offsetExists($callable[0]))
             ) {
                 return \sprintf("        %s->%s(\$%s);\n", $this->dumpValue($callable[0]), $callable[1], $variableName);
             }
@@ -1187,15 +1187,16 @@ EOTXT
 
             if (['...'] === $arguments && ('Closure' !== ($class = $definition->getClass() ?: 'Closure') || $definition->isLazy() && (
                 $callable[0] instanceof Reference
-                || ($callable[0] instanceof Definition && !$this->definitionVariables->contains($callable[0]))
+                || ($callable[0] instanceof Definition && !$this->definitionVariables->offsetExists($callable[0]))
             ))) {
                 $initializer = 'fn () => '.$this->dumpValue($callable[0]);
+                $this->preload[LazyClosure::class] = LazyClosure::class;
 
                 return $return.LazyClosure::getCode($initializer, $callable, $class, $this->container, $id).$tail;
             }
 
             if ($callable[0] instanceof Reference
-                || ($callable[0] instanceof Definition && $this->definitionVariables->contains($callable[0]))
+                || ($callable[0] instanceof Definition && $this->definitionVariables->offsetExists($callable[0]))
             ) {
                 return $return.\sprintf('%s->%s(%s)', $this->dumpValue($callable[0]), $callable[1], $arguments ? implode(', ', $arguments) : '').$tail;
             }
@@ -1860,7 +1861,15 @@ EOF;
 
                     $returnedType = '';
                     if ($value instanceof TypedReference) {
-                        $returnedType = \sprintf(': %s\%s', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE >= $value->getInvalidBehavior() ? '' : '?', str_replace(['|', '&'], ['|\\', '&\\'], $value->getType()));
+                        $type = $value->getType();
+                        $nullable = ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE >= $value->getInvalidBehavior() ? '' : '?';
+
+                        if ('?' === ($type[0] ?? '')) {
+                            $type = substr($type, 1);
+                            $nullable = '?';
+                        }
+
+                        $returnedType = \sprintf(': %s\%s', $nullable, str_replace(['|', '&'], ['|\\', '&\\'], $type));
                     }
 
                     $attribute = '';
@@ -1937,7 +1946,7 @@ EOF;
             if ($value->hasErrors() && $e = $value->getErrors()) {
                 return \sprintf('throw new RuntimeException(%s)', $this->export(reset($e)));
             }
-            if ($this->definitionVariables?->contains($value)) {
+            if ($this->definitionVariables?->offsetExists($value)) {
                 return $this->dumpValue($this->definitionVariables[$value], $interpolate);
             }
             if ($value->getMethodCalls()) {

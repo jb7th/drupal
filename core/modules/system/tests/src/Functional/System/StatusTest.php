@@ -117,7 +117,7 @@ class StatusTest extends BrowserTestBase {
     // Check if JSON database support is enabled.
     $this->assertSession()->pageTextContains('Database support for JSON');
     $elements = $this->xpath('//details[@class="system-status-report__entry"]//div[contains(text(), :text)]', [
-      ':text' => 'Is required in Drupal 10.0.',
+      ':text' => 'Drupal requires databases that support JSON storage.',
     ]);
     $this->assertCount(1, $elements);
     $this->assertStringStartsWith('Available', $elements[0]->getParent()->getText());
@@ -182,6 +182,10 @@ class StatusTest extends BrowserTestBase {
     $session->pageTextNotContains('Deprecated themes found: Test deprecated theme.');
     $this->assertSession()->elementNotExists('xpath', "//a[contains(@href, 'http://example.com/deprecated_theme')]");
 
+    // Check that the installation profile information is displayed.
+    $this->drupalGet('admin/reports/status');
+    $this->assertSession()->pageTextContains('Testing (testing-' . \Drupal::VERSION . ')');
+
     // Check if pg_trgm extension is enabled on postgres.
     if (\Drupal::database()->databaseType() == 'pgsql') {
       $this->assertSession()->pageTextContains('PostgreSQL pg_trgm extension');
@@ -193,7 +197,6 @@ class StatusTest extends BrowserTestBase {
     }
 
     // Test APCu status.
-    $this->markTestSkipped('Skipped due to bugs with APUc size warnings. See https://www.drupal.org/project/drupal/issues/3539331');
     $elements = $this->xpath('//details[summary[contains(@class, "system-status-report__status-title") and normalize-space(text()) = "PHP APCu caching"]]/div[@class="system-status-report__entry__value"]/text()');
     // Ensure the status is not a warning if APCu size is greater than or equal
     // to the recommended size.

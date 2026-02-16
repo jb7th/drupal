@@ -4,7 +4,7 @@ description: Does not have a migration or migrate_drupal.yml file.
 package: Testing
 # version: VERSION
 
-# Information added by Drupal.org packaging script on 2025-11-13
-version: '11.1.9'
+# Information added by Drupal.org packaging script on 2025-12-10
+version: '11.2.10'
 project: 'drupal'
-datestamp: 1762992166
+datestamp: 1765361968

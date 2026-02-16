@@ -8,7 +8,7 @@ dependencies:
 lifecycle: deprecated
 lifecycle_link: "https://www.drupal.org/node/3223395#s-layout-builder-expose-all-field-blocks"
 
-# Information added by Drupal.org packaging script on 2025-11-13
-version: '11.1.9'
+# Information added by Drupal.org packaging script on 2025-12-10
+version: '11.2.10'
 project: 'drupal'
-datestamp: 1762992166
+datestamp: 1765361968

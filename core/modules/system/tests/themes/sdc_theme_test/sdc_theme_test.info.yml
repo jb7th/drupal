@@ -6,7 +6,10 @@ base theme: sdc_theme_test_base
 
 enforce_prop_schemas: false
 
-# Information added by Drupal.org packaging script on 2025-11-13
-version: '11.1.9'
+libraries:
+  - sdc_theme_test/reset
+
+# Information added by Drupal.org packaging script on 2025-12-10
+version: '11.2.10'
 project: 'drupal'
-datestamp: 1762992166
+datestamp: 1765361967

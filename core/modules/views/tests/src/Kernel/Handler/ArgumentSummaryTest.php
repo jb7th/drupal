@@ -91,7 +91,7 @@ class ArgumentSummaryTest extends ViewsKernelTestBase {
       'node',
       $this->nodeType->id(),
       'field_tags',
-      NULL,
+      'Tags',
       'taxonomy_term',
       'default',
       $handler_settings,
@@ -102,7 +102,8 @@ class ArgumentSummaryTest extends ViewsKernelTestBase {
   /**
    * Creates a term in the tag vocabulary.
    *
-   * @return \Drupal\taxonomy\TermInterface $term
+   * @return \Drupal\taxonomy\TermInterface
+   *   The created term.
    */
   protected function createTag(): TermInterface {
     $tag = Term::create([

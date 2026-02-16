@@ -6,11 +6,11 @@ hidden: true
 dependencies:
   - drupal:dblog
 install:
-  - ban
+  - dependency_foo_test
 themes:
   - starterkit_theme
 
-# Information added by Drupal.org packaging script on 2025-11-13
-version: '11.1.9'
+# Information added by Drupal.org packaging script on 2025-12-10
+version: '11.2.10'
 project: 'drupal'
-datestamp: 1762992166
+datestamp: 1765361967

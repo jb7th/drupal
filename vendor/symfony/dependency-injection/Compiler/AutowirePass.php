@@ -334,9 +334,11 @@ class AutowirePass extends AbstractRecursivePass
                         $value = $attribute->buildDefinition($value, $type, $parameter);
                         $value = $this->doProcessValue($value);
                     } elseif ($lazy = $attribute->lazy) {
+                        $value ??= $getValue();
+                        $type = $this->resolveProxyType($type, $value->getType());
                         $definition = (new Definition($type))
                             ->setFactory('current')
-                            ->setArguments([[$value ??= $getValue()]])
+                            ->setArguments([[$value]])
                             ->setLazy(true);
 
                         if (!\is_array($lazy)) {
@@ -459,26 +461,26 @@ class AutowirePass extends AbstractRecursivePass
         $name = $target = (array_filter($reference->getAttributes(), static fn ($a) => $a instanceof Target)[0] ?? null)?->name;
 
         if (null !== $name ??= $reference->getName()) {
-            if ($this->container->has($alias = $type.' $'.$name) && !$this->container->findDefinition($alias)->isAbstract()) {
+            if ($this->container->has($alias = $type.' $'.$name) && $this->canDefinitionBeAutowired($alias)) {
                 return new TypedReference($alias, $type, $reference->getInvalidBehavior());
             }
 
-            if (null !== ($alias = $this->getCombinedAlias($type, $name)) && !$this->container->findDefinition($alias)->isAbstract()) {
+            if (null !== ($alias = $this->getCombinedAlias($type, $name)) && $this->canDefinitionBeAutowired($alias)) {
                 return new TypedReference($alias, $type, $reference->getInvalidBehavior());
             }
 
             $parsedName = (new Target($name))->getParsedName();
 
-            if ($this->container->has($alias = $type.' $'.$parsedName) && !$this->container->findDefinition($alias)->isAbstract()) {
+            if ($this->container->has($alias = $type.' $'.$parsedName) && $this->canDefinitionBeAutowired($alias)) {
                 return new TypedReference($alias, $type, $reference->getInvalidBehavior());
             }
 
-            if (null !== ($alias = $this->getCombinedAlias($type, $parsedName)) && !$this->container->findDefinition($alias)->isAbstract()) {
+            if (null !== ($alias = $this->getCombinedAlias($type, $parsedName)) && $this->canDefinitionBeAutowired($alias)) {
                 return new TypedReference($alias, $type, $reference->getInvalidBehavior());
             }
 
-            if (($this->container->has($n = $name) && !$this->container->findDefinition($n)->isAbstract())
-                || ($this->container->has($n = $parsedName) && !$this->container->findDefinition($n)->isAbstract())
+            if (($this->container->has($n = $name) && $this->canDefinitionBeAutowired($n))
+                || ($this->container->has($n = $parsedName) && $this->canDefinitionBeAutowired($n))
             ) {
                 foreach ($this->container->getAliases() as $id => $alias) {
                     if ($n === (string) $alias && str_starts_with($id, $type.' $')) {
@@ -492,15 +494,22 @@ class AutowirePass extends AbstractRecursivePass
             }
         }
 
-        if ($this->container->has($type) && !$this->container->findDefinition($type)->isAbstract()) {
+        if ($this->container->has($type) && $this->canDefinitionBeAutowired($type)) {
             return new TypedReference($type, $type, $reference->getInvalidBehavior());
         }
 
-        if (null !== ($alias = $this->getCombinedAlias($type)) && !$this->container->findDefinition($alias)->isAbstract()) {
+        if (null !== ($alias = $this->getCombinedAlias($type)) && $this->canDefinitionBeAutowired($alias)) {
             return new TypedReference($alias, $type, $reference->getInvalidBehavior());
         }
 
         return null;
+    }
+
+    private function canDefinitionBeAutowired(string $id): bool
+    {
+        $definition = $this->container->findDefinition($id);
+
+        return !$definition->isAbstract() && !$definition->hasTag('container.excluded');
     }
 
     /**
@@ -746,5 +755,31 @@ class AutowirePass extends AbstractRecursivePass
         }
 
         return $alias;
+    }
+
+    /**
+     * Resolves the class name that should be proxied for a lazy service.
+     *
+     * @param string $originalType The original parameter type-hint (e.g., the interface)
+     * @param string $serviceId    The service ID the type-hint resolved to (e.g., the alias)
+     */
+    private function resolveProxyType(string $originalType, string $serviceId): string
+    {
+        if (!$this->container->has($serviceId)) {
+            return $originalType;
+        }
+
+        $resolvedType = $this->container->findDefinition($serviceId)->getClass();
+        $resolvedType = $this->container->getParameterBag()->resolveValue($resolvedType);
+
+        if (!$resolvedType || !class_exists($resolvedType, false) && !interface_exists($resolvedType, false)) {
+            return $originalType;
+        }
+
+        if (\PHP_VERSION_ID < 80400 && $this->container->getReflectionClass($resolvedType, false)->isFinal()) {
+            return $originalType;
+        }
+
+        return $resolvedType;
     }
 }
