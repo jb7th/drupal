@@ -38,7 +38,7 @@ class Regex extends Constraint
     /**
      * @param string|array<string,mixed>|null $pattern     The regular expression to match
      * @param string|null                     $htmlPattern The pattern to use in the HTML5 pattern attribute
-     * @param bool|null                       $match       Whether to validate the value matches the configured pattern or not (defaults to false)
+     * @param bool|null                       $match       Whether to validate the value matches the configured pattern or not (defaults to true)
      * @param string[]|null                   $groups
      * @param array<string,mixed>             $options
      */
@@ -66,7 +66,7 @@ class Regex extends Constraint
         $this->normalizer = $normalizer ?? $this->normalizer;
 
         if (null !== $this->normalizer && !\is_callable($this->normalizer)) {
-            throw new InvalidArgumentException(sprintf('The "normalizer" option must be a valid callable ("%s" given).', get_debug_type($this->normalizer)));
+            throw new InvalidArgumentException(\sprintf('The "normalizer" option must be a valid callable ("%s" given).', get_debug_type($this->normalizer)));
         }
     }
 
@@ -120,8 +120,6 @@ class Regex extends Constraint
         $pattern = '^' === $pattern[0] ? substr($pattern, 1) : '.*'.$pattern;
 
         // Trim trailing $, otherwise append .*
-        $pattern = '$' === $pattern[\strlen($pattern) - 1] ? substr($pattern, 0, -1) : $pattern.'.*';
-
-        return $pattern;
+        return '$' === $pattern[\strlen($pattern) - 1] ? substr($pattern, 0, -1) : $pattern.'.*';
     }
 }

@@ -25,19 +25,20 @@ class Cascade extends Constraint
     public array $exclude = [];
 
     /**
-     * @param string[]|string|array<string,mixed>|null $exclude Properties excluded from validation
-     * @param array<string,mixed>|null                 $options
+     * @param non-empty-string[]|non-empty-string|array<string,mixed>|null $exclude Properties excluded from validation
+     * @param array<string,mixed>|null                                     $options
      */
     public function __construct(array|string|null $exclude = null, ?array $options = null)
     {
         if (\is_array($exclude) && !array_is_list($exclude)) {
             $options = array_merge($exclude, $options ?? []);
+            $options['exclude'] = array_flip((array) ($options['exclude'] ?? []));
         } else {
             $this->exclude = array_flip((array) $exclude);
         }
 
         if (\is_array($options) && \array_key_exists('groups', $options)) {
-            throw new ConstraintDefinitionException(sprintf('The option "groups" is not supported by the constraint "%s".', __CLASS__));
+            throw new ConstraintDefinitionException(\sprintf('The option "groups" is not supported by the constraint "%s".', __CLASS__));
         }
 
         parent::__construct($options);

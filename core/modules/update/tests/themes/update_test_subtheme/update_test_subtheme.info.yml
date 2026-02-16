@@ -1,10 +1,10 @@
 name: 'Update test subtheme'
 type: theme
-description: 'Test theme which uses update_test_basetheme as the base theme.'
+description: 'Test theme which uses update_test_base_theme as the base theme.'
 # version: VERSION
-base theme: update_test_basetheme
+base theme: update_test_base_theme
 
-# Information added by Drupal.org packaging script on 2025-03-19
-version: '11.0.13'
+# Information added by Drupal.org packaging script on 2025-11-13
+version: '11.1.9'
 project: 'drupal'
-datestamp: 1742408578
+datestamp: 1762992166

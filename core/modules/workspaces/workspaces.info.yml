@@ -1,13 +1,12 @@
 name: Workspaces
 type: module
-description: 'Allows users to stage content or preview a full site by using multiple workspaces on a single site.'
+description: 'Provides an API for staging and previewing content in a full site context.'
 # version: VERSION
 package: Core
-configure: entity.workspace.collection
 dependencies:
   - drupal:user
 
-# Information added by Drupal.org packaging script on 2025-03-19
-version: '11.0.13'
+# Information added by Drupal.org packaging script on 2025-11-13
+version: '11.1.9'
 project: 'drupal'
-datestamp: 1742408578
+datestamp: 1762992166
