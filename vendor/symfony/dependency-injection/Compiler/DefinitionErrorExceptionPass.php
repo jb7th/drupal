@@ -30,10 +30,7 @@ class DefinitionErrorExceptionPass extends AbstractRecursivePass
     private array $erroredDefinitions = [];
     private array $sourceReferences = [];
 
-    /**
-     * @return void
-     */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         try {
             parent::process($container);
@@ -65,13 +62,10 @@ class DefinitionErrorExceptionPass extends AbstractRecursivePass
         }
 
         if ($value instanceof Reference && $this->currentId !== $targetId = (string) $value) {
-            if (
-                ContainerInterface::RUNTIME_EXCEPTION_ON_INVALID_REFERENCE === $value->getInvalidBehavior()
-                || ContainerInterface::IGNORE_ON_UNINITIALIZED_REFERENCE === $value->getInvalidBehavior()
-            ) {
-                $this->sourceReferences[$targetId][$this->currentId ?? ''] ??= true;
+            if (ContainerInterface::RUNTIME_EXCEPTION_ON_INVALID_REFERENCE === $value->getInvalidBehavior()) {
+                $this->sourceReferences[$targetId][$this->currentId] ??= true;
             } else {
-                $this->sourceReferences[$targetId][$this->currentId ?? ''] = false;
+                $this->sourceReferences[$targetId][$this->currentId] = false;
             }
 
             return $value;
@@ -81,7 +75,7 @@ class DefinitionErrorExceptionPass extends AbstractRecursivePass
             return parent::processValue($value, $isRoot);
         }
 
-        $this->erroredDefinitions[$this->currentId ?? ''] = $value;
+        $this->erroredDefinitions[$this->currentId] = $value;
 
         return parent::processValue($value);
     }

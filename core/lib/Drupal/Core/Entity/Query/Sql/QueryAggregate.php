@@ -22,7 +22,6 @@ class QueryAggregate extends Query implements QueryAggregateInterface {
    */
   public function execute() {
     return $this
-      ->alter()
       ->prepare()
       ->addAggregate()
       ->compile()

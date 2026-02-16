@@ -3,12 +3,13 @@ type: module
 description: 'Allows discovery and rendering of self-contained UI components.'
 # version: VERSION
 package: Core (Experimental)
-lifecycle: deprecated
-lifecycle_link: 'https://www.drupal.org/docs/core-modules-and-themes/deprecated-and-obsolete#s-single-directory-components-sdc'
+lifecycle: obsolete
+lifecycle_link: https://www.drupal.org/node/3223395#s-sdc
 dependencies:
   - drupal:serialization
+hidden: true
 
-# Information added by Drupal.org packaging script on 2025-12-09
-version: '10.5.8'
+# Information added by Drupal.org packaging script on 2025-03-19
+version: '11.0.13'
 project: 'drupal'
-datestamp: 1765309401
+datestamp: 1742408579

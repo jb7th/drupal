@@ -8,7 +8,6 @@
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\views\Plugin\views\cache\CachePluginBase;
 use Drupal\views\Plugin\views\PluginBase;
-use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -314,6 +313,8 @@ function hook_views_data() {
       'id' => 'standard',
       // Default label for relationship in the UI.
       'label' => t('Example node'),
+      // Description shown within the add relationship handler in the UI.
+      'help' => t('Relationship between the node and node field data'),
     ],
   ];
 
@@ -496,8 +497,8 @@ function hook_views_data_alter(array &$data) {
   // In Views data definitions, each field can have only one relationship. So
   // rather than adding this relationship directly to the $data['foo']['fid']
   // field entry, which could overwrite an existing relationship, we define
-  // a dummy field key to handle the relationship.
-  $data['foo']['unique_dummy_name'] = [
+  // a placeholder field key to handle the relationship.
+  $data['foo']['unique_placeholder_name'] = [
     'title' => t('Title seen while adding relationship'),
     'help' => t('More information about the relationship'),
 
@@ -507,11 +508,13 @@ function hook_views_data_alter(array &$data) {
       // Database field name in example_table for the join.
       'base field' => 'eid',
       // Real database field name in foo for the join, to override
-      // 'unique_dummy_name'.
+      // 'unique_placeholder_name'.
       'field' => 'fid',
       // ID of relationship handler plugin to use.
       'id' => 'standard',
       'label' => t('Default label for relationship'),
+      // Description shown within the add relationship handler in the UI.
+      'help' => t('Description of the placeholder field relationship'),
     ],
   ];
 

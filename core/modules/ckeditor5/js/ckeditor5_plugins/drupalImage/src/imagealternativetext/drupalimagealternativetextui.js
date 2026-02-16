@@ -5,8 +5,7 @@
  * @module drupalImage/imagealternativetext/drupalimagealternativetextui
  */
 
-import { Plugin } from 'ckeditor5/src/core';
-import { IconLowVision } from '@ckeditor/ckeditor5-icons';
+import { Plugin, icons } from 'ckeditor5/src/core';
 import {
   ButtonView,
   ContextualBalloon,
@@ -145,7 +144,7 @@ export default class DrupalImageAlternativeTextUi extends Plugin {
 
       view.set({
         label: Drupal.t('Change image alternative text'),
-        icon: IconLowVision,
+        icon: icons.lowVision,
         tooltip: true,
       });
 

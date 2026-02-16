@@ -19,6 +19,7 @@ html {
 
 body {
   word-wrap: break-word;
+  -webkit-hyphens: auto;
   hyphens: auto;
   color: var(--color-fg);
   background: var(--color-bg);

@@ -28,7 +28,7 @@ class InstallerExistingConfigNoConfigTest extends InstallerConfigDirectoryTestBa
   /**
    * {@inheritdoc}
    */
-  protected function getConfigLocation(): string {
+  protected function getConfigLocation() {
     return __DIR__ . '/../../../fixtures/config_install/testing_config_install_no_config';
   }
 

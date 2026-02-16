@@ -30,6 +30,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Context\ExecutionContext;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Mapping\MetadataInterface;
 use Symfony\Component\Validator\Mapping\PropertyMetadata;
 use Symfony\Component\Validator\Validator\ContextualValidatorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -44,24 +45,22 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 abstract class ConstraintValidatorTestCase extends TestCase
 {
-    /**
-     * @var ExecutionContextInterface
-     */
-    protected $context;
+    protected ExecutionContextInterface $context;
 
     /**
      * @var T
      */
-    protected $validator;
+    protected ConstraintValidatorInterface $validator;
 
-    protected $group;
-    protected $metadata;
-    protected $object;
-    protected $value;
-    protected $root;
-    protected $propertyPath;
-    protected $constraint;
-    protected $defaultTimezone;
+    protected string $group;
+    protected ?MetadataInterface $metadata;
+    protected mixed $object;
+    protected mixed $value;
+    protected mixed $root;
+    protected string $propertyPath;
+    protected Constraint $constraint;
+    protected ?string $defaultTimezone = null;
+
     private string $defaultLocale;
     private array $expectedViolations;
     private int $call;
@@ -280,7 +279,7 @@ abstract class ConstraintValidatorTestCase extends TestCase
 
     protected function assertNoViolation()
     {
-        $this->assertSame(0, $violationsCount = \count($this->context->getViolations()), \sprintf('0 violation expected. Got %u.', $violationsCount));
+        $this->assertSame(0, $violationsCount = \count($this->context->getViolations()), sprintf('0 violation expected. Got %u.', $violationsCount));
     }
 
     protected function buildViolation(string|\Stringable $message): ConstraintViolationAssertion
@@ -289,11 +288,9 @@ abstract class ConstraintValidatorTestCase extends TestCase
     }
 
     /**
-     * @return ConstraintValidatorInterface
-     *
-     * @psalm-return T
+     * @return T
      */
-    abstract protected function createValidator();
+    abstract protected function createValidator(): ConstraintValidatorInterface;
 }
 
 final class ConstraintViolationAssertion
@@ -423,7 +420,7 @@ final class ConstraintViolationAssertion
 
         $violations = iterator_to_array($this->context->getViolations());
 
-        Assert::assertSame($expectedCount = \count($expected), $violationsCount = \count($violations), \sprintf('%u violation(s) expected. Got %u.', $expectedCount, $violationsCount));
+        Assert::assertSame($expectedCount = \count($expected), $violationsCount = \count($violations), sprintf('%u violation(s) expected. Got %u.', $expectedCount, $violationsCount));
 
         reset($violations);
 
@@ -491,7 +488,7 @@ class AssertingContextualValidator implements ContextualValidatorInterface
         Assert::assertFalse($this->expectNoValidate, 'No validation calls have been expected.');
 
         if (!isset($this->expectedAtPath[++$this->atPathCalls])) {
-            throw new ExpectationFailedException(\sprintf('Validation for property path "%s" was not expected.', $path));
+            throw new ExpectationFailedException(sprintf('Validation for property path "%s" was not expected.', $path));
         }
 
         $expectedPath = $this->expectedAtPath[$this->atPathCalls];

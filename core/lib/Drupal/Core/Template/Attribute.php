@@ -73,7 +73,7 @@ class Attribute implements \ArrayAccess, \IteratorAggregate, MarkupInterface {
    *
    * @var \Drupal\Core\Template\AttributeValueBase[]
    */
-  protected array $storage = [];
+  protected $storage = [];
 
   /**
    * Constructs a \Drupal\Core\Template\Attribute object.
@@ -90,8 +90,7 @@ class Attribute implements \ArrayAccess, \IteratorAggregate, MarkupInterface {
   /**
    * {@inheritdoc}
    */
-  #[\ReturnTypeWillChange]
-  public function offsetGet($name) {
+  public function offsetGet($name): mixed {
     if (isset($this->storage[$name])) {
       return $this->storage[$name];
     }
@@ -102,13 +101,13 @@ class Attribute implements \ArrayAccess, \IteratorAggregate, MarkupInterface {
       $this->offsetSet('class', []);
       return $this->storage['class'];
     }
+    return NULL;
   }
 
   /**
    * {@inheritdoc}
    */
-  #[\ReturnTypeWillChange]
-  public function offsetSet($name, $value) {
+  public function offsetSet($name, $value): void {
     $this->storage[$name] = $this->createAttributeValue($name, $value);
   }
 
@@ -161,16 +160,14 @@ class Attribute implements \ArrayAccess, \IteratorAggregate, MarkupInterface {
   /**
    * {@inheritdoc}
    */
-  #[\ReturnTypeWillChange]
-  public function offsetUnset($name) {
+  public function offsetUnset($name): void {
     unset($this->storage[$name]);
   }
 
   /**
    * {@inheritdoc}
    */
-  #[\ReturnTypeWillChange]
-  public function offsetExists($name) {
+  public function offsetExists($name): bool {
     return isset($this->storage[$name]);
   }
 
@@ -365,8 +362,7 @@ class Attribute implements \ArrayAccess, \IteratorAggregate, MarkupInterface {
   /**
    * {@inheritdoc}
    */
-  #[\ReturnTypeWillChange]
-  public function getIterator() {
+  public function getIterator(): \ArrayIterator {
     return new \ArrayIterator($this->storage);
   }
 
@@ -383,8 +379,7 @@ class Attribute implements \ArrayAccess, \IteratorAggregate, MarkupInterface {
    * @return string
    *   The safe string content.
    */
-  #[\ReturnTypeWillChange]
-  public function jsonSerialize() {
+  public function jsonSerialize(): string {
     return (string) $this;
   }
 

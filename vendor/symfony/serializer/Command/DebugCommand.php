@@ -49,7 +49,7 @@ class DebugCommand extends Command
 
         if (!class_exists($class)) {
             $io = new SymfonyStyle($input, $output);
-            $io->error(\sprintf('Class "%s" was not found.', $class));
+            $io->error(sprintf('Class "%s" was not found.', $class));
 
             return Command::FAILURE;
         }
@@ -62,7 +62,7 @@ class DebugCommand extends Command
     private function dumpSerializerDataForClass(InputInterface $input, OutputInterface $output, string $class): void
     {
         $io = new SymfonyStyle($input, $output);
-        $title = \sprintf('<info>%s</info>', $class);
+        $title = sprintf('<info>%s</info>', $class);
         $rows = [];
         $dump = new Dumper($output);
 
@@ -102,6 +102,7 @@ class DebugCommand extends Command
                 'groups' => $attributeMetadata->getGroups(),
                 'maxDepth' => $attributeMetadata->getMaxDepth(),
                 'serializedName' => $attributeMetadata->getSerializedName(),
+                'serializedPath' => $attributeMetadata->getSerializedPath() ? (string) $attributeMetadata->getSerializedPath() : null,
                 'ignore' => $attributeMetadata->isIgnored(),
                 'normalizationContexts' => $attributeMetadata->getNormalizationContexts(),
                 'denormalizationContexts' => $attributeMetadata->getDenormalizationContexts(),

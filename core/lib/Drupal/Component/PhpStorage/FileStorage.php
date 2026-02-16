@@ -119,9 +119,7 @@ class FileStorage implements PhpStorageInterface {
         return TRUE;
       }
       else {
-        // The directory path is not disclosed to avoid an information
-        // disclosure vulnerability. For security reasons, further details are
-        // not provided in the error message.
+        // Something failed and the directory doesn't exist.
         trigger_error('mkdir(): Permission Denied', E_USER_WARNING);
       }
     }
@@ -144,14 +142,6 @@ class FileStorage implements PhpStorageInterface {
    */
   public function getFullPath($name) {
     return $this->directory . '/' . $name;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function writeable() {
-    @trigger_error(__METHOD__ . '() is deprecated in drupal:10.1.0 and will be removed from drupal:11.0.0. There is no replacement. See https://www.drupal.org/node/3155413', E_USER_DEPRECATED);
-    return TRUE;
   }
 
   /**

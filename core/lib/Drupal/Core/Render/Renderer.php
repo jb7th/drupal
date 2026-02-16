@@ -9,7 +9,6 @@ use Drupal\Component\Utility\Xss;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
-use Drupal\Core\Controller\ControllerResolverInterface;
 use Drupal\Core\Form\FormHelper;
 use Drupal\Core\Render\Element\RenderCallbackInterface;
 use Drupal\Core\Security\TrustedCallbackInterface;
@@ -25,41 +24,6 @@ class Renderer implements RendererInterface {
   use DoTrustedCallbackTrait;
 
   /**
-   * The theme manager.
-   *
-   * @var \Drupal\Core\Theme\ThemeManagerInterface
-   */
-  protected $theme;
-
-  /**
-   * The callable resolver.
-   *
-   * @var \Drupal\Core\Utility\CallableResolver
-   */
-  protected CallableResolver $callableResolver;
-
-  /**
-   * The element info.
-   *
-   * @var \Drupal\Core\Render\ElementInfoManagerInterface
-   */
-  protected $elementInfo;
-
-  /**
-   * The placeholder generator.
-   *
-   * @var \Drupal\Core\Render\PlaceholderGeneratorInterface
-   */
-  protected $placeholderGenerator;
-
-  /**
-   * The render cache service.
-   *
-   * @var \Drupal\Core\Render\RenderCacheInterface
-   */
-  protected $renderCache;
-
-  /**
    * The renderer configuration array.
    *
    * @var array
@@ -72,13 +36,6 @@ class Renderer implements RendererInterface {
    * @var bool
    */
   protected $isRenderingRoot = FALSE;
-
-  /**
-   * The request stack.
-   *
-   * @var \Symfony\Component\HttpFoundation\RequestStack
-   */
-  protected $requestStack;
 
   /**
    * The render context collection.
@@ -100,36 +57,34 @@ class Renderer implements RendererInterface {
   /**
    * Constructs a new Renderer.
    *
-   * @param \Drupal\Core\Utility\CallableResolver|\Drupal\Core\Controller\ControllerResolverInterface $callable_resolver
+   * @param \Drupal\Core\Utility\CallableResolver $callableResolver
    *   The callable resolver.
    * @param \Drupal\Core\Theme\ThemeManagerInterface $theme
    *   The theme manager.
-   * @param \Drupal\Core\Render\ElementInfoManagerInterface $element_info
+   * @param \Drupal\Core\Render\ElementInfoManagerInterface $elementInfo
    *   The element info.
-   * @param \Drupal\Core\Render\PlaceholderGeneratorInterface $placeholder_generator
+   * @param \Drupal\Core\Render\PlaceholderGeneratorInterface $placeholderGenerator
    *   The placeholder generator.
-   * @param \Drupal\Core\Render\RenderCacheInterface $render_cache
+   * @param \Drupal\Core\Render\RenderCacheInterface $renderCache
    *   The render cache service.
-   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack
    *   The request stack.
    * @param array $renderer_config
    *   The renderer configuration array.
    */
-  public function __construct(ControllerResolverInterface|CallableResolver $callable_resolver, ThemeManagerInterface $theme, ElementInfoManagerInterface $element_info, PlaceholderGeneratorInterface $placeholder_generator, RenderCacheInterface $render_cache, RequestStack $request_stack, array $renderer_config) {
-    if ($callable_resolver instanceof ControllerResolverInterface) {
-      @trigger_error('Calling ' . __METHOD__ . '() with an argument of ControllerResolverInterface is deprecated in drupal:10.2.0 and is removed in drupal:11.0.0. Use \Drupal\Core\Utility\CallableResolver instead. See https://www.drupal.org/node/3369969', E_USER_DEPRECATED);
-      $callable_resolver = \Drupal::service('callable_resolver');
-    }
-    $this->callableResolver = $callable_resolver;
-    $this->theme = $theme;
-    $this->elementInfo = $element_info;
-    $this->placeholderGenerator = $placeholder_generator;
-    $this->renderCache = $render_cache;
+  public function __construct(
+    protected CallableResolver $callableResolver,
+    protected ThemeManagerInterface $theme,
+    protected ElementInfoManagerInterface $elementInfo,
+    protected PlaceholderGeneratorInterface $placeholderGenerator,
+    protected RenderCacheInterface $renderCache,
+    protected RequestStack $requestStack,
+    array $renderer_config,
+  ) {
     if (!isset($renderer_config['debug'])) {
       $renderer_config['debug'] = FALSE;
     }
     $this->rendererConfig = $renderer_config;
-    $this->requestStack = $request_stack;
 
     // Initialize the context collection if needed.
     if (!isset(static::$contextCollection)) {
@@ -359,7 +314,11 @@ class Renderer implements RendererInterface {
       '#create_placeholder' => TRUE,
     ]);
 
-    $this->loadElementDefaults($elements);
+    // If the default values for this element have not been loaded yet, populate
+    // them.
+    if (isset($elements['#type']) && empty($elements['#defaults_loaded'])) {
+      $elements += $this->elementInfo->getInfo($elements['#type']);
+    }
 
     // First validate the usage of #lazy_builder; both of the next if-statements
     // use it if available.
@@ -408,9 +367,6 @@ class Renderer implements RendererInterface {
       // Throw an exception if #lazy_builder callback does not return an array;
       // provide helpful details for troubleshooting.
       assert(is_array($new_elements), "#lazy_builder callbacks must return a valid renderable array, got " . gettype($new_elements) . " from " . Variable::callableToString($elements['#lazy_builder'][0]));
-
-      // The lazy builder could have set a #type, load its defaults.
-      $this->loadElementDefaults($new_elements);
 
       // Retain the original cacheability metadata, plus cache keys.
       CacheableMetadata::createFromRenderArray($elements)
@@ -644,18 +600,6 @@ class Renderer implements RendererInterface {
   }
 
   /**
-   * Loads an element's default values based on its type.
-   *
-   * @param array $element
-   *   The render array representing the element.
-   */
-  protected function loadElementDefaults(array &$element): void {
-    if (isset($element['#type']) && empty($element['#defaults_loaded'])) {
-      $element += $this->elementInfo->getInfo($element['#type']);
-    }
-  }
-
-  /**
    * Returns the current render context.
    *
    * @return \Drupal\Core\Render\RenderContext|null
@@ -663,11 +607,6 @@ class Renderer implements RendererInterface {
    */
   protected function getCurrentRenderContext() {
     $request = $this->requestStack->getCurrentRequest();
-
-    if (is_null($request)) {
-      return NULL;
-    }
-
     return static::$contextCollection[$request] ?? NULL;
   }
 

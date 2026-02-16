@@ -80,9 +80,6 @@ class UrlHelper {
    *   The data compressed into a URL-safe string.
    */
   public static function compressQueryParameter(string $data): string {
-    if (!\extension_loaded('zlib')) {
-      return $data;
-    }
     // Use 'base64url' encoding. Note that the '=' sign is only used for padding
     // on the right of the string, and is otherwise not part of the data.
     // @see https://datatracker.ietf.org/doc/html/rfc4648#section-5
@@ -104,9 +101,6 @@ class UrlHelper {
    *   uncompressed.
    */
   public static function uncompressQueryParameter(string $compressed): string {
-    if (!\extension_loaded('zlib')) {
-      return $compressed;
-    }
     // Because this comes from user data, suppress the PHP warning that
     // gzcompress() throws if the base64-encoded string is invalid.
     $return = @gzuncompress(base64_decode(str_replace(['-', '_'], ['+', '/'], $compressed)));
@@ -200,10 +194,9 @@ class UrlHelper {
     // appears in front of the '?' query argument delimiter.
     $scheme_delimiter_position = strpos($url, '://');
     $query_delimiter_position = strpos($url, '?');
-    $fragment_delimiter_position = strpos($url, '#');
-    if ($scheme_delimiter_position !== FALSE && ($query_delimiter_position === FALSE || $scheme_delimiter_position < $query_delimiter_position) && ($fragment_delimiter_position === FALSE || $scheme_delimiter_position < $fragment_delimiter_position)) {
+    if ($scheme_delimiter_position !== FALSE && ($query_delimiter_position === FALSE || $scheme_delimiter_position < $query_delimiter_position)) {
       // Split off the fragment, if any.
-      if ($fragment_delimiter_position !== FALSE) {
+      if (str_contains($url, '#')) {
         [$url, $options['fragment']] = explode('#', $url, 2);
       }
 

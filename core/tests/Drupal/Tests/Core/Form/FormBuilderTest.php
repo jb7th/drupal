@@ -67,7 +67,7 @@ class FormBuilderTest extends FormTestBase {
    * @covers ::getFormId
    */
   public function testGetFormIdWithNonFormClass(): void {
-    $form_arg = __CLASS__;
+    $form_arg = \stdClass::class;
     $form_state = new FormState();
     $this->expectException(\InvalidArgumentException::class);
     $this->expectExceptionMessage("The form argument $form_arg must be an instance of \Drupal\Core\Form\FormInterface.");
@@ -964,57 +964,6 @@ class FormBuilderTest extends FormTestBase {
       'token:none,authenticated:false,method:get' => [NULL, FALSE, ['contexts' => ['user.roles:authenticated'], 'tags' => ['CACHE_MISS_IF_UNCACHEABLE_HTTP_METHOD:form']], NULL, 'get'],
       'token:test_form_id,authenticated:false,method:get' => ['test_form_id', TRUE, ['contexts' => ['user.roles:authenticated'], 'tags' => ['CACHE_MISS_IF_UNCACHEABLE_HTTP_METHOD:form']], ['max-age' => 0], 'get'],
     ];
-  }
-
-  /**
-   * Tests the detection of the triggering element.
-   */
-  public function testTriggeringElement(): void {
-    $form_arg = 'Drupal\Tests\Core\Form\TestForm';
-
-    // No triggering element.
-    $form_state = new FormState();
-    $this->formBuilder->buildForm($form_arg, $form_state);
-    $this->assertNull($form_state->getTriggeringElement());
-
-    // When no op is provided, default to the first button element.
-    $form_state = new FormState();
-    $form_state->setMethod('GET');
-    $form_state->setUserInput(['form_id' => 'test_form']);
-    $this->formBuilder->buildForm($form_arg, $form_state);
-    $triggeringElement = $form_state->getTriggeringElement();
-    $this->assertIsArray($triggeringElement);
-    $this->assertSame('op', $triggeringElement['#name']);
-    $this->assertSame('Submit', $triggeringElement['#value']);
-
-    // A single triggering element.
-    $form_state = new FormState();
-    $form_state->setMethod('GET');
-    $form_state->setUserInput(['form_id' => 'test_form', 'op' => 'Submit']);
-    $this->formBuilder->buildForm($form_arg, $form_state);
-    $triggeringElement = $form_state->getTriggeringElement();
-    $this->assertIsArray($triggeringElement);
-    $this->assertSame('op', $triggeringElement['#name']);
-
-    // A different triggering element.
-    $form_state = new FormState();
-    $form_state->setMethod('GET');
-    $form_state->setUserInput(['form_id' => 'test_form', 'other_action' => 'Other action']);
-    $this->formBuilder->buildForm($form_arg, $form_state);
-    $triggeringElement = $form_state->getTriggeringElement();
-    $this->assertIsArray($triggeringElement);
-    $this->assertSame('other_action', $triggeringElement['#name']);
-
-    // Two triggering elements.
-    $form_state = new FormState();
-    $form_state->setMethod('GET');
-    $form_state->setUserInput(['form_id' => 'test_form', 'op' => 'Submit', 'other_action' => 'Other action']);
-    $this->formBuilder->buildForm($form_arg, $form_state);
-
-    // Verify that only the first triggering element is respected.
-    $triggeringElement = $form_state->getTriggeringElement();
-    $this->assertIsArray($triggeringElement);
-    $this->assertSame('op', $triggeringElement['#name']);
   }
 
 }

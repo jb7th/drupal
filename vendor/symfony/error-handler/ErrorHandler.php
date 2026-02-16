@@ -70,12 +70,12 @@ class ErrorHandler
     private array $loggers = [
         \E_DEPRECATED => [null, LogLevel::INFO],
         \E_USER_DEPRECATED => [null, LogLevel::INFO],
-        \E_NOTICE => [null, LogLevel::WARNING],
-        \E_USER_NOTICE => [null, LogLevel::WARNING],
-        \E_WARNING => [null, LogLevel::WARNING],
-        \E_USER_WARNING => [null, LogLevel::WARNING],
-        \E_COMPILE_WARNING => [null, LogLevel::WARNING],
-        \E_CORE_WARNING => [null, LogLevel::WARNING],
+        \E_NOTICE => [null, LogLevel::ERROR],
+        \E_USER_NOTICE => [null, LogLevel::ERROR],
+        \E_WARNING => [null, LogLevel::ERROR],
+        \E_USER_WARNING => [null, LogLevel::ERROR],
+        \E_COMPILE_WARNING => [null, LogLevel::ERROR],
+        \E_CORE_WARNING => [null, LogLevel::ERROR],
         \E_USER_ERROR => [null, LogLevel::CRITICAL],
         \E_RECOVERABLE_ERROR => [null, LogLevel::CRITICAL],
         \E_COMPILE_ERROR => [null, LogLevel::CRITICAL],
@@ -181,7 +181,7 @@ class ErrorHandler
     {
         if (\PHP_VERSION_ID < 80400) {
             $this->levels[\E_STRICT] = 'Runtime Notice';
-            $this->loggers[\E_STRICT] = [null, LogLevel::WARNING];
+            $this->loggers[\E_STRICT] = [null, LogLevel::ERROR];
         }
 
         if ($bootstrappingLogger) {
@@ -193,7 +193,7 @@ class ErrorHandler
             $traceReflector->setValue($e, $trace);
             $e->file = $file ?? $e->file;
             $e->line = $line ?? $e->line;
-        }, null, new class extends \Exception {
+        }, null, new class() extends \Exception {
         });
         $this->debug = $debug;
     }

@@ -27,16 +27,6 @@ use Symfony\Component\Process\Process;
 #[AsCommand(name: 'completion', description: 'Dump the shell completion script')]
 final class DumpCompletionCommand extends Command
 {
-    /**
-     * @deprecated since Symfony 6.1
-     */
-    protected static $defaultName = 'completion';
-
-    /**
-     * @deprecated since Symfony 6.1
-     */
-    protected static $defaultDescription = 'Dump the shell completion script';
-
     private array $supportedShells;
 
     protected function configure(): void
@@ -108,9 +98,9 @@ EOH
                 $output = $output->getErrorOutput();
             }
             if ($shell) {
-                $output->writeln(\sprintf('<error>Detected shell "%s", which is not supported by Symfony shell completion (supported shells: "%s").</>', $shell, implode('", "', $supportedShells)));
+                $output->writeln(sprintf('<error>Detected shell "%s", which is not supported by Symfony shell completion (supported shells: "%s").</>', $shell, implode('", "', $supportedShells)));
             } else {
-                $output->writeln(\sprintf('<error>Shell not detected, Symfony shell completion only supports "%s").</>', implode('", "', $supportedShells)));
+                $output->writeln(sprintf('<error>Shell not detected, Symfony shell completion only supports "%s").</>', implode('", "', $supportedShells)));
             }
 
             return 2;

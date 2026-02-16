@@ -102,7 +102,6 @@ class RoleSettingsForm extends FormBase {
       if ($new_admin_role) {
         $this->roleStorage->load($new_admin_role)->setIsAdmin(TRUE)->save();
       }
-      $this->messenger()->addStatus($this->t('The role settings have been updated.'));
     }
   }
 

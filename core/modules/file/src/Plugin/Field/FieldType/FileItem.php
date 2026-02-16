@@ -253,7 +253,8 @@ class FileItem extends EntityReferenceItem {
    *
    * This doubles as a convenience clean-up function and a validation routine.
    * Commas are allowed by the end-user, but ultimately the value will be stored
-   * as a space-separated list for compatibility with file_validate_extensions().
+   * as a space-separated list for compatibility with the 'FileExtension'
+   * constraint.
    */
   public static function validateExtensions($element, FormStateInterface $form_state) {
     if (!empty($element['#value'])) {
@@ -359,11 +360,8 @@ class FileItem extends EntityReferenceItem {
     $dirname = static::doGetUploadLocation($settings);
     \Drupal::service('file_system')->prepareDirectory($dirname, FileSystemInterface::CREATE_DIRECTORY);
 
-    // Ensure directory ends with a slash.
-    $dirname .= str_ends_with($dirname, '/') ? '' : '/';
-
     // Generate a file entity.
-    $destination = $dirname . $random->name(10) . '.txt';
+    $destination = $dirname . '/' . $random->name(10, TRUE) . '.txt';
     $data = $random->paragraphs(3);
     /** @var \Drupal\file\FileRepositoryInterface $file_repository */
     $file_repository = \Drupal::service('file.repository');

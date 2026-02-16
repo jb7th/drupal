@@ -28,6 +28,7 @@ use Symfony\Component\Yaml\Yaml;
  * Tests different ways of enabling CKEditor 5 plugins.
  *
  * @group ckeditor5
+ * @group #slow
  * @internal
  */
 class CKEditor5PluginManagerTest extends KernelTestBase {
@@ -72,6 +73,9 @@ class CKEditor5PluginManagerTest extends KernelTestBase {
     Editor::create([
       'format' => 'basic_html',
       'editor' => 'ckeditor5',
+      'image_upload' => [
+        'status' => FALSE,
+      ],
     ])->save();
     FilterFormat::create(
       Yaml::parseFile('core/profiles/standard/config/install/filter.format.full_html.yml')
@@ -79,6 +83,9 @@ class CKEditor5PluginManagerTest extends KernelTestBase {
     Editor::create([
       'format' => 'full_html',
       'editor' => 'ckeditor5',
+      'image_upload' => [
+        'status' => FALSE,
+      ],
     ])->save();
     $this->manager = $this->container->get('plugin.manager.ckeditor5.plugin');
     $this->typedConfig = $this->container->get('config.typed');
@@ -1058,6 +1065,9 @@ PHP,
     $text_editor = Editor::create([
       'format' => 'dummy',
       'editor' => 'ckeditor5',
+      'image_upload' => [
+        'status' => FALSE,
+      ],
       'settings' => [
         'plugins' => [
           $sneaky_plugin_id => ['configured_subset' => $configured_subset],
@@ -2033,22 +2043,6 @@ PHP,
         ]),
       ],
     ];
-  }
-
-  /**
-   * Tests backwards compatibility of icon names.
-   */
-  public function testIconsBackwardsCompatibility(): void {
-    \Drupal::service('module_installer')->install(['ckeditor5_icon_deprecation_test']);
-    $definitions = \Drupal::service('plugin.manager.ckeditor5.plugin')->getDefinitions();
-    $config = $definitions['ckeditor5_icon_deprecation_test_plugin']->toArray()['ckeditor5']['config']['drupalElementStyles'];
-    $this->assertSame('IconObjectCenter', $config['align'][0]['icon']);
-    $this->assertSame('IconObjectLeft', $config['align'][1]['icon']);
-    $this->assertSame('IconObjectRight', $config['align'][2]['icon']);
-    $this->assertSame('IconObjectInlineLeft', $config['align'][3]['icon']);
-    $this->assertSame('IconObjectInlineRight', $config['align'][4]['icon']);
-    $this->assertStringContainsString('<svg viewBox="0 0 20 20"', $config['svg'][0]['icon']);
-    $this->assertSame('IconThreeVerticalDots', $config['threeVerticalDots'][0]['icon']);
   }
 
 }

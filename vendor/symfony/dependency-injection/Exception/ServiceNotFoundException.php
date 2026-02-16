@@ -29,9 +29,9 @@ class ServiceNotFoundException extends InvalidArgumentException implements NotFo
         if (null !== $msg) {
             // no-op
         } elseif (null === $sourceId) {
-            $msg = \sprintf('You have requested a non-existent service "%s".', $id);
+            $msg = sprintf('You have requested a non-existent service "%s".', $id);
         } else {
-            $msg = \sprintf('The service "%s" has a dependency on a non-existent service "%s".', $sourceId, $id);
+            $msg = sprintf('The service "%s" has a dependency on a non-existent service "%s".', $sourceId, $id);
         }
 
         if ($alternatives) {
@@ -50,26 +50,17 @@ class ServiceNotFoundException extends InvalidArgumentException implements NotFo
         $this->alternatives = $alternatives;
     }
 
-    /**
-     * @return string
-     */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getSourceId()
+    public function getSourceId(): ?string
     {
         return $this->sourceId;
     }
 
-    /**
-     * @return array
-     */
-    public function getAlternatives()
+    public function getAlternatives(): array
     {
         return $this->alternatives;
     }

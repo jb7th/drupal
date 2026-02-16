@@ -249,19 +249,6 @@ class BatchBuilderTest extends UnitTestCase {
   }
 
   /**
-   * Tests registering IDs of built batches.
-   *
-   * @covers ::isSetIdRegistered
-   * @covers ::registerSetId
-   */
-  public function testRegisterIds(): void {
-    $setId = $this->randomMachineName();
-    $this->assertFalse(BatchBuilder::isSetIdRegistered($setId));
-    (new BatchBuilder())->registerSetId($setId);
-    $this->assertTrue(BatchBuilder::isSetIdRegistered($setId));
-  }
-
-  /**
    * Empty callback for the tests.
    *
    * @internal

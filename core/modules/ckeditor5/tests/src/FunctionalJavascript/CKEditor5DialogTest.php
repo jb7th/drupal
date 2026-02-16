@@ -42,6 +42,9 @@ class CKEditor5DialogTest extends CKEditor5TestBase {
     Editor::create([
       'format' => 'test_format',
       'editor' => 'ckeditor5',
+      'image_upload' => [
+        'status' => FALSE,
+      ],
       'settings' => [
         'toolbar' => [
           'items' => ['link'],
@@ -78,7 +81,7 @@ class CKEditor5DialogTest extends CKEditor5TestBase {
     // Make sure the input field can have focus and we can type into it.
     $input->setValue($link_url);
     // Save the new link.
-    $page->find('xpath', "//button[span[text()='Insert']]")->click();
+    $page->find('css', '.ck-balloon-panel .ck-button-save')->click();
     // Make sure something was added to the text.
     $this->assertNotEmpty($content_area->getText());
   }

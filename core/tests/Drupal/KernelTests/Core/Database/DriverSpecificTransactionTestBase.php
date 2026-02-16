@@ -10,7 +10,6 @@ use Drupal\Core\Database\Transaction\ClientConnectionTransactionState;
 use Drupal\Core\Database\Transaction\StackItem;
 use Drupal\Core\Database\Transaction\StackItemType;
 use Drupal\Core\Database\Transaction\TransactionManagerBase;
-use Drupal\Core\Database\TransactionExplicitCommitNotAllowedException;
 use Drupal\Core\Database\TransactionNameNonUniqueException;
 use Drupal\Core\Database\TransactionOutOfOrderException;
 
@@ -494,7 +493,7 @@ class DriverSpecificTransactionTestBase extends DriverSpecificDatabaseTestBase {
    * @internal
    */
   public function assertRowPresent(string $name, ?string $message = NULL): void {
-    $present = (bool) $this->connection->query('SELECT 1 FROM {test} WHERE [name] = :name', [':name' => $name])->fetchField();
+    $present = (boolean) $this->connection->query('SELECT 1 FROM {test} WHERE [name] = :name', [':name' => $name])->fetchField();
     $this->assertTrue($present, $message ?? "Row '{$name}' should be present, but it actually does not exist.");
   }
 
@@ -509,7 +508,7 @@ class DriverSpecificTransactionTestBase extends DriverSpecificDatabaseTestBase {
    * @internal
    */
   public function assertRowAbsent(string $name, ?string $message = NULL): void {
-    $present = (bool) $this->connection->query('SELECT 1 FROM {test} WHERE [name] = :name', [':name' => $name])->fetchField();
+    $present = (boolean) $this->connection->query('SELECT 1 FROM {test} WHERE [name] = :name', [':name' => $name])->fetchField();
     $this->assertFalse($present, $message ?? "Row '{$name}' should be absent, but it actually exists.");
   }
 
@@ -876,50 +875,6 @@ class DriverSpecificTransactionTestBase extends DriverSpecificDatabaseTestBase {
     $reflectionProperty->setValue($manager, []);
     unset($testConnection);
     Database::closeConnection('test_fail');
-  }
-
-  /**
-   * Tests deprecation of Connection methods.
-   *
-   * @group legacy
-   */
-  public function testConnectionDeprecations(): void {
-    $this->cleanUp();
-    $transaction = $this->connection->startTransaction();
-    $this->expectDeprecation('Drupal\\Core\\Database\\Connection::transactionDepth() is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. Do not access the transaction stack depth, it is an implementation detail. See https://www.drupal.org/node/3381002');
-    $this->assertSame(1, $this->connection->transactionDepth());
-    $this->insertRow('row');
-    $this->expectDeprecation('Drupal\\Core\\Database\\Connection::rollBack() is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. Do not rollback the connection, roll back the Transaction objects instead. See https://www.drupal.org/node/3381002');
-    $this->connection->rollback();
-    $transaction = NULL;
-    $this->assertRowAbsent('row');
-
-    $this->cleanUp();
-    $transaction = $this->connection->startTransaction();
-    $this->expectDeprecation('Drupal\\Core\\Database\\Connection::addRootTransactionEndCallback() is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. Use TransactionManagerInterface::addPostTransactionCallback() instead. See https://www.drupal.org/node/3381002');
-    $this->connection->addRootTransactionEndCallback([$this, 'rootTransactionCallback']);
-    $this->insertRow('row');
-    $this->expectDeprecation('Drupal\\Core\\Database\\Connection::commit() is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. Do not commit the connection, void the Transaction objects instead. See https://www.drupal.org/node/3381002');
-    try {
-      $this->connection->commit();
-    }
-    catch (TransactionExplicitCommitNotAllowedException $e) {
-      // Do nothing.
-    }
-    $transaction = NULL;
-    $this->assertRowPresent('row');
-
-    $this->cleanUp();
-    $this->expectDeprecation('Drupal\\Core\\Database\\Connection::pushTransaction() is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. Use TransactionManagerInterface methods instead. See https://www.drupal.org/node/3381002');
-    $this->connection->pushTransaction('foo');
-    $this->expectDeprecation('Drupal\\Core\\Database\\Connection::popTransaction() is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. Use TransactionManagerInterface methods instead. See https://www.drupal.org/node/3381002');
-    $this->expectDeprecation('Drupal\\Core\\Database\\Connection::popCommittableTransactions() is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. Use TransactionManagerInterface methods instead. See https://www.drupal.org/node/3381002');
-    $this->expectDeprecation('Drupal\\Core\\Database\\Connection::doCommit() is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. Use TransactionManagerInterface methods instead. See https://www.drupal.org/node/3381002');
-    $this->connection->popTransaction('foo');
-
-    // Ensure there are no outstanding transactions left. This is necessary for
-    // the test to pass when xdebug.mode has the 'develop' option enabled.
-    $this->connection->commitAll();
   }
 
 }

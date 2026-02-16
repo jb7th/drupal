@@ -62,13 +62,9 @@ class CsvEncoder implements EncoderInterface, DecoderInterface
 
         if (!is_iterable($data)) {
             $data = [[$data]];
-        } elseif (empty($data)) {
+        } elseif (!$data) {
             $data = [[]];
         } else {
-            if ($data instanceof \Traversable) {
-                // Generators can only be iterated once — convert to array to allow multiple traversals
-                $data = iterator_to_array($data);
-            }
             // Sequential arrays of arrays are considered as collections
             $i = 0;
             foreach ($data as $key => $value) {
@@ -201,7 +197,7 @@ class CsvEncoder implements EncoderInterface, DecoderInterface
             return $result;
         }
 
-        if (empty($result) || isset($result[1])) {
+        if (!$result || isset($result[1])) {
             return $result;
         }
 
@@ -245,7 +241,7 @@ class CsvEncoder implements EncoderInterface, DecoderInterface
         $asCollection = $context[self::AS_COLLECTION_KEY] ?? $this->defaultContext[self::AS_COLLECTION_KEY];
 
         if (!\is_array($headers)) {
-            throw new InvalidArgumentException(\sprintf('The "%s" context variable must be an array or null, given "%s".', self::HEADERS_KEY, get_debug_type($headers)));
+            throw new InvalidArgumentException(sprintf('The "%s" context variable must be an array or null, given "%s".', self::HEADERS_KEY, get_debug_type($headers)));
         }
 
         return [$delimiter, $enclosure, $escapeChar, $keySeparator, $headers, $escapeFormulas, $outputBom, $asCollection];

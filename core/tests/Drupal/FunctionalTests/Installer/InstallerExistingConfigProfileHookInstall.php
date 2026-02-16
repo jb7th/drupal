@@ -55,7 +55,7 @@ EOF;
   /**
    * {@inheritdoc}
    */
-  protected function getConfigLocation(): string {
+  protected function getConfigLocation() {
     // We're not going to get to the config import stage so this does not
     // matter.
     return __DIR__ . '/../../../fixtures/config_install/testing_config_install_no_config';

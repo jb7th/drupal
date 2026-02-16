@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\Core\Render;
 
-use Drupal\Core\Render\RenderContext;
 use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
@@ -545,40 +544,6 @@ class RendererTest extends RendererTestBase {
   }
 
   /**
-   * Tests that element defaults are added.
-   *
-   * @covers ::render
-   * @covers ::doRender
-   */
-  public function testElementDefaultsAdded(): void {
-    $build = ['#type' => 'details'];
-    $this->renderer->renderInIsolation($build);
-    $this->assertTrue($build['#defaults_loaded'], "An element with a type had said type's defaults loaded.");
-
-    $build = [
-      '#lazy_builder' => [
-        'Drupal\Tests\Core\Render\TestCallables::lazyBuilder',
-        [FALSE],
-      ],
-      '#create_placeholder' => FALSE,
-    ];
-
-    $this->renderer->renderInIsolation($build);
-    $this->assertArrayNotHasKey('#defaults_loaded', $build, "A lazy builder that did not set a type had no type defaults loaded.");
-
-    $build = [
-      '#lazy_builder' => [
-        'Drupal\Tests\Core\Render\TestCallables::lazyBuilder',
-        [TRUE],
-      ],
-      '#create_placeholder' => FALSE,
-    ];
-
-    $this->renderer->renderInIsolation($build);
-    $this->assertTrue($build['#defaults_loaded'], "A lazy builder that set a type had said type's defaults loaded.");
-  }
-
-  /**
    * @covers ::render
    * @covers ::doRender
    *
@@ -1098,23 +1063,6 @@ class RendererTest extends RendererTestBase {
     ];
   }
 
-  /**
-   * @covers ::hasRenderContext
-   */
-  public function testHasRenderContext(): void {
-    // Tests with no render context.
-    $this->assertFalse($this->renderer->hasRenderContext());
-
-    // Tests in a render context.
-    $this->renderer->executeInRenderContext(new RenderContext(), function () {
-      $this->assertTrue($this->renderer->hasRenderContext());
-    });
-
-    // Test that the method works with no current request.
-    $this->requestStack->pop();
-    $this->assertFalse($this->renderer->hasRenderContext());
-  }
-
 }
 
 class TestAccessClass implements TrustedCallbackInterface {
@@ -1151,19 +1099,11 @@ class TestCallables implements TrustedCallbackInterface {
     return $elements;
   }
 
-  public static function lazyBuilder(bool $set_type): array {
-    $build['content'] = ['#markup' => 'Content'];
-    if ($set_type) {
-      $build['#type'] = 'details';
-    }
-    return $build;
-  }
-
   /**
    * {@inheritdoc}
    */
   public static function trustedCallbacks() {
-    return ['preRenderPrinted', 'lazyBuilder'];
+    return ['preRenderPrinted'];
   }
 
 }

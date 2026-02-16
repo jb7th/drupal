@@ -213,14 +213,9 @@ class FormBuilder implements FormBuilderInterface, FormValidatorInterface, FormS
   /**
    * {@inheritdoc}
    */
-  public function getForm($form_arg) {
+  public function getForm($form_arg, mixed ...$args) {
     $form_state = new FormState();
-
-    $args = func_get_args();
-    // Remove $form_arg from the arguments.
-    unset($args[0]);
-    $form_state->addBuildInfo('args', array_values($args));
-
+    $form_state->addBuildInfo('args', $args);
     return $this->buildForm($form_arg, $form_state);
   }
 
@@ -473,13 +468,10 @@ class FormBuilder implements FormBuilderInterface, FormValidatorInterface, FormS
   /**
    * {@inheritdoc}
    */
-  public function submitForm($form_arg, FormStateInterface &$form_state) {
+  public function submitForm($form_arg, FormStateInterface &$form_state, mixed ...$args) {
     $build_info = $form_state->getBuildInfo();
     if (empty($build_info['args'])) {
-      $args = func_get_args();
-      // Remove $form and $form_state from the arguments.
-      unset($args[0], $args[1]);
-      $form_state->addBuildInfo('args', array_values($args));
+      $form_state->addBuildInfo('args', $args);
     }
 
     // Populate FormState::$input with the submitted values before retrieving
@@ -737,11 +729,6 @@ class FormBuilder implements FormBuilderInterface, FormValidatorInterface, FormS
       // submitted form value appears literally, regardless of custom #tree
       // and #parents being set elsewhere.
       '#parents' => ['form_build_id'],
-      // Certain browsers such as Firefox retain form input data after reload.
-      // This can result in the form being in a strange state if the page is
-      // reloaded after an AJAX request. Setting the form build ID field's
-      // autocomplete off prevents the input from being retained.
-      '#attributes' => ['autocomplete' => 'off'],
     ];
 
     // Add a token, based on either #token or form_id, to any form displayed to
@@ -1191,7 +1178,7 @@ class FormBuilder implements FormBuilderInterface, FormValidatorInterface, FormS
     // of how the element is themed or whether JavaScript is used to change the
     // control's attributes. However, it's good UI to let the user know that
     // input is not wanted for the control. HTML supports two attributes for:
-    // this: https://www.w3.org/TR/html401/interact/forms.html#h-17.12. If a form
+    // this: http://www.w3.org/TR/html401/interact/forms.html#h-17.12. If a form
     // wants to start a control off with one of these attributes for UI
     // purposes, only, but still allow input to be processed if it's submitted,
     // it can set the desired attribute in #attributes directly rather than
@@ -1314,11 +1301,7 @@ class FormBuilder implements FormBuilderInterface, FormValidatorInterface, FormS
         $buttons[] = $element;
         $form_state->setButtons($buttons);
         if ($this->buttonWasClicked($element, $form_state)) {
-          // A correctly formatted request should only have one triggering
-          // element.
-          if (empty($form_state->getTriggeringElement())) {
-            $form_state->setTriggeringElement($element);
-          }
+          $form_state->setTriggeringElement($element);
         }
       }
     }
@@ -1381,7 +1364,7 @@ class FormBuilder implements FormBuilderInterface, FormValidatorInterface, FormS
     // The input value attribute is treated as CDATA by browsers. This means
     // that they replace character entities with characters. Therefore, we need
     // to decode the value in $element['#value']. For more details see
-    // https://www.w3.org/TR/html401/types.html#type-cdata.
+    // http://www.w3.org/TR/html401/types.html#type-cdata.
     if (isset($input[$element['#name']]) && $input[$element['#name']] == Html::decodeEntities($element['#value'])) {
       return TRUE;
     }

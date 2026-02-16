@@ -160,7 +160,6 @@ abstract class ConfigEntityBase extends EntityBase implements ConfigEntityInterf
   /**
    * {@inheritdoc}
    */
-  #[ActionMethod(adminLabel: new TranslatableMarkup('Set a value'), pluralize: 'setMultiple')]
   public function set($property_name, $value) {
     if ($this instanceof EntityWithPluginCollectionInterface && !$this->isSyncing()) {
       $plugin_collections = $this->getPluginCollections();
@@ -178,7 +177,6 @@ abstract class ConfigEntityBase extends EntityBase implements ConfigEntityInterf
   /**
    * {@inheritdoc}
    */
-  #[ActionMethod(adminLabel: new TranslatableMarkup('Enable'), pluralize: FALSE)]
   public function enable() {
     return $this->setStatus(TRUE);
   }
@@ -186,7 +184,6 @@ abstract class ConfigEntityBase extends EntityBase implements ConfigEntityInterf
   /**
    * {@inheritdoc}
    */
-  #[ActionMethod(adminLabel: new TranslatableMarkup('Disable'), pluralize: FALSE)]
   public function disable() {
     return $this->setStatus(FALSE);
   }
@@ -347,7 +344,7 @@ abstract class ConfigEntityBase extends EntityBase implements ConfigEntityInterf
   /**
    * {@inheritdoc}
    */
-  public function __sleep() {
+  public function __sleep(): array {
     $keys_to_unset = [];
     if ($this instanceof EntityWithPluginCollectionInterface) {
       // Get the plugin collections first, so that the properties are

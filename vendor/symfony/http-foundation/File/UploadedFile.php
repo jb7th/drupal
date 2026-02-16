@@ -35,6 +35,7 @@ class UploadedFile extends File
     private string $originalName;
     private string $mimeType;
     private int $error;
+    private string $originalPath;
 
     /**
      * Accepts the information of the uploaded file as provided by the PHP global $_FILES.
@@ -63,6 +64,7 @@ class UploadedFile extends File
     public function __construct(string $path, string $originalName, ?string $mimeType = null, ?int $error = null, bool $test = false)
     {
         $this->originalName = $this->getName($originalName);
+        $this->originalPath = strtr($originalName, '\\', '/');
         $this->mimeType = $mimeType ?: 'application/octet-stream';
         $this->error = $error ?: \UPLOAD_ERR_OK;
         $this->test = $test;
@@ -90,6 +92,21 @@ class UploadedFile extends File
     public function getClientOriginalExtension(): string
     {
         return pathinfo($this->originalName, \PATHINFO_EXTENSION);
+    }
+
+    /**
+     * Returns the original file full path.
+     *
+     * It is extracted from the request from which the file has been uploaded.
+     * This should not be considered as a safe value to use for a file name/path on your servers.
+     *
+     * If this file was uploaded with the "webkitdirectory" upload directive, this will contain
+     * the path of the file relative to the uploaded root directory. Otherwise this will be identical
+     * to getClientOriginalName().
+     */
+    public function getClientOriginalPath(): string
+    {
+        return $this->originalPath;
     }
 
     /**
@@ -174,7 +191,7 @@ class UploadedFile extends File
                 restore_error_handler();
             }
             if (!$moved) {
-                throw new FileException(\sprintf('Could not move the file "%s" to "%s" (%s).', $this->getPathname(), $target, strip_tags($error)));
+                throw new FileException(sprintf('Could not move the file "%s" to "%s" (%s).', $this->getPathname(), $target, strip_tags($error)));
             }
 
             @chmod($target, 0666 & ~umask());
@@ -264,6 +281,6 @@ class UploadedFile extends File
         $maxFilesize = \UPLOAD_ERR_INI_SIZE === $errorCode ? self::getMaxFilesize() / 1024 : 0;
         $message = $errors[$errorCode] ?? 'The file "%s" was not uploaded due to an unknown error.';
 
-        return \sprintf($message, $this->getClientOriginalName(), $maxFilesize);
+        return sprintf($message, $this->getClientOriginalName(), $maxFilesize);
     }
 }

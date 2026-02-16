@@ -33,12 +33,12 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
  */
 class PhpFileLoader extends FileLoader
 {
-    protected $autoRegisterAliasesForSinglyImplementedInterfaces = false;
+    protected bool $autoRegisterAliasesForSinglyImplementedInterfaces = false;
     private ?ConfigBuilderGeneratorInterface $generator;
 
-    public function __construct(ContainerBuilder $container, FileLocatorInterface $locator, ?string $env = null, ?ConfigBuilderGeneratorInterface $generator = null)
+    public function __construct(ContainerBuilder $container, FileLocatorInterface $locator, ?string $env = null, ?ConfigBuilderGeneratorInterface $generator = null, bool $prepend = false)
     {
-        parent::__construct($container, $locator, $env);
+        parent::__construct($container, $locator, $env, $prepend);
         $this->generator = $generator;
     }
 
@@ -57,9 +57,6 @@ class PhpFileLoader extends FileLoader
             return include $path;
         }, $this, ProtectedPhpFileLoader::class);
 
-        $instanceof = $this->instanceof;
-        $this->instanceof = [];
-
         try {
             $callback = $load($path, $this->env);
 
@@ -67,7 +64,7 @@ class PhpFileLoader extends FileLoader
                 $this->executeCallback($callback, new ContainerConfigurator($this->container, $this, $this->instanceof, $path, $resource, $this->env), $path);
             }
         } finally {
-            $this->instanceof = $instanceof;
+            $this->instanceof = [];
             $this->registerAliasesForSinglyImplementedInterfaces();
         }
 
@@ -111,7 +108,7 @@ class PhpFileLoader extends FileLoader
         foreach ($r->getParameters() as $parameter) {
             $reflectionType = $parameter->getType();
             if (!$reflectionType instanceof \ReflectionNamedType) {
-                throw new \InvalidArgumentException(\sprintf('Could not resolve argument "$%s" for "%s". You must typehint it (for example with "%s" or "%s").', $parameter->getName(), $path, ContainerConfigurator::class, ContainerBuilder::class));
+                throw new \InvalidArgumentException(sprintf('Could not resolve argument "$%s" for "%s". You must typehint it (for example with "%s" or "%s").', $parameter->getName(), $path, ContainerConfigurator::class, ContainerBuilder::class));
             }
             $type = $reflectionType->getName();
 
@@ -136,7 +133,7 @@ class PhpFileLoader extends FileLoader
                     try {
                         $configBuilder = $this->configBuilder($type);
                     } catch (InvalidArgumentException|\LogicException $e) {
-                        throw new \InvalidArgumentException(\sprintf('Could not resolve argument "%s" for "%s".', $type.' $'.$parameter->getName(), $path), 0, $e);
+                        throw new \InvalidArgumentException(sprintf('Could not resolve argument "%s" for "%s".', $type.' $'.$parameter->getName(), $path), 0, $e);
                     }
                     $configBuilders[] = $configBuilder;
                     $arguments[] = $configBuilder;
@@ -146,12 +143,18 @@ class PhpFileLoader extends FileLoader
         // Force load ContainerConfigurator to make env(), param() etc available.
         class_exists(ContainerConfigurator::class);
 
-        $callback(...$arguments);
-
-        /** @var ConfigBuilderInterface $configBuilder */
-        foreach ($configBuilders as $configBuilder) {
-            $containerConfigurator->extension($configBuilder->getExtensionAlias(), $configBuilder->toArray());
+        ++$this->importing;
+        try {
+            $callback(...$arguments);
+        } finally {
+            --$this->importing;
         }
+
+        foreach ($configBuilders as $configBuilder) {
+            $this->loadExtensionConfig($configBuilder->getExtensionAlias(), ContainerConfigurator::processValue($configBuilder->toArray()));
+        }
+
+        $this->loadExtensionConfigs();
     }
 
     /**
@@ -174,7 +177,7 @@ class PhpFileLoader extends FileLoader
 
         // If it does not start with Symfony\Config\ we don't know how to handle this
         if (!str_starts_with($namespace, 'Symfony\\Config\\')) {
-            throw new InvalidArgumentException(\sprintf('Could not find or generate class "%s".', $namespace));
+            throw new InvalidArgumentException(sprintf('Could not find or generate class "%s".', $namespace));
         }
 
         // Try to get the extension alias
@@ -186,12 +189,12 @@ class PhpFileLoader extends FileLoader
 
         if (!$this->container->hasExtension($alias)) {
             $extensions = array_filter(array_map(fn (ExtensionInterface $ext) => $ext->getAlias(), $this->container->getExtensions()));
-            throw new InvalidArgumentException(\sprintf('There is no extension able to load the configuration for "%s". Looked for namespace "%s", found "%s".', $namespace, $alias, $extensions ? implode('", "', $extensions) : 'none'));
+            throw new InvalidArgumentException(UndefinedExtensionHandler::getErrorMessage($namespace, null, $alias, $extensions));
         }
 
         $extension = $this->container->getExtension($alias);
         if (!$extension instanceof ConfigurationExtensionInterface) {
-            throw new \LogicException(\sprintf('You cannot use the config builder for "%s" because the extension does not implement "%s".', $namespace, ConfigurationExtensionInterface::class));
+            throw new \LogicException(sprintf('You cannot use the config builder for "%s" because the extension does not implement "%s".', $namespace, ConfigurationExtensionInterface::class));
         }
 
         $configuration = $extension->getConfiguration([], $this->container);

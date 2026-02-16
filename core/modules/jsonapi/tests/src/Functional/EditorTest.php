@@ -15,6 +15,7 @@ use Drupal\filter\Entity\FilterFormat;
  * JSON:API integration test for the "Editor" config entity type.
  *
  * @group jsonapi
+ * @group #slow
  */
 class EditorTest extends ConfigEntityResourceTestBase {
 
@@ -77,16 +78,19 @@ class EditorTest extends ConfigEntityResourceTestBase {
     $camelids = Editor::create([
       'format' => 'llama',
       'editor' => 'ckeditor5',
+      'image_upload' => [
+        'status' => FALSE,
+      ],
     ]);
     $camelids
       ->setImageUploadSettings([
         'status' => TRUE,
         'scheme' => 'public',
         'directory' => 'inline-images',
-        'max_size' => '',
+        'max_size' => NULL,
         'max_dimensions' => [
-          'width' => '',
-          'height' => '',
+          'width' => NULL,
+          'height' => NULL,
         ],
       ])
       ->save();
@@ -164,7 +168,7 @@ class EditorTest extends ConfigEntityResourceTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function getExpectedUnauthorizedAccessMessage($method): string {
+  protected function getExpectedUnauthorizedAccessMessage($method) {
     return "The 'administer filters' permission is required.";
   }
 
@@ -189,16 +193,19 @@ class EditorTest extends ConfigEntityResourceTestBase {
     $entity = Editor::create([
       'format' => 'pachyderm',
       'editor' => 'ckeditor5',
+      'image_upload' => [
+        'status' => FALSE,
+      ],
     ]);
 
     $entity->setImageUploadSettings([
       'status' => TRUE,
       'scheme' => 'public',
       'directory' => 'inline-images',
-      'max_size' => '',
+      'max_size' => NULL,
       'max_dimensions' => [
-        'width' => '',
-        'height' => '',
+        'width' => NULL,
+        'height' => NULL,
       ],
     ])->save();
 
