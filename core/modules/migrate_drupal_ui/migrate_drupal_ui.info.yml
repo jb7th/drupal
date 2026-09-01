@@ -8,8 +8,10 @@ dependencies:
   - drupal:migrate
   - drupal:migrate_drupal
   - drupal:dblog
+lifecycle: deprecated
+lifecycle_link: https://www.drupal.org/node/3223395#s-migrate-drupal-ui
 
-# Information added by Drupal.org packaging script on 2026-06-17
-version: '11.2.14'
+# Information added by Drupal.org packaging script on 2026-07-23
+version: '11.3.16'
 project: 'drupal'
-datestamp: 1781718566
+datestamp: 1784769313

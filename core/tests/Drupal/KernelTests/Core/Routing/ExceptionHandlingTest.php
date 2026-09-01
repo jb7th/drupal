@@ -7,14 +7,16 @@ namespace Drupal\KernelTests\Core\Routing;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Cache\CacheableJsonResponse;
 use Drupal\KernelTests\KernelTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Tests the exception handling for various cases.
- *
- * @group Routing
  */
+#[Group('Routing')]
+#[RunTestsInSeparateProcesses]
 class ExceptionHandlingTest extends KernelTestBase {
 
   /**
@@ -150,7 +152,7 @@ class ExceptionHandlingTest extends KernelTestBase {
    *
    * @see \Drupal\system\Tests\Routing\ExceptionHandlingTest::testExceptionResponseGeneratedForOriginalRequest()
    */
-  protected function doTest404Route($path) {
+  protected function doTest404Route($path): Response {
     $this->config('system.site')->set('page.404', $path)->save();
 
     $request = Request::create('/not-found');

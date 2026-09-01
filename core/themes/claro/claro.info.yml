@@ -113,6 +113,8 @@ libraries-extend:
     - claro/dropbutton
   core/drupal.checkbox:
     - claro/checkbox
+  core/drupal.item-list:
+    - claro/item-list
   core/drupal.message:
     - claro/messages
   core/drupal.progress:
@@ -175,7 +177,7 @@ regions:
 regions_hidden:
   - sidebar_first
 
-# Information added by Drupal.org packaging script on 2026-06-17
-version: '11.2.14'
+# Information added by Drupal.org packaging script on 2026-07-23
+version: '11.3.16'
 project: 'drupal'
-datestamp: 1781718565
+datestamp: 1784769313
