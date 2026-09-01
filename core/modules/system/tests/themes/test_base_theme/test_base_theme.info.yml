@@ -23,7 +23,7 @@ libraries-extend:
   starterkit_theme/base:
     - test_base_theme/global-styling
 
-# Information added by Drupal.org packaging script on 2025-12-10
-version: '11.2.10'
+# Information added by Drupal.org packaging script on 2026-06-17
+version: '11.2.14'
 project: 'drupal'
-datestamp: 1765361967
+datestamp: 1781718566
